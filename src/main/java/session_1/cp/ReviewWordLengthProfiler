@@ -1,0 +1,43 @@
+public class ReviewWordLengthProfiler {
+
+    public static void classifyWordLengths(String review) {
+        try {
+            if (review == null || review.trim().isEmpty()) {
+                throw new IllegalArgumentException("Review text cannot be empty or null.");
+            }
+
+            // Split review by one or more whitespace characters
+            String[] words = review.trim().split("\\s+");
+
+            int shortWordCount = 0;  // 1-4 letters
+            int mediumWordCount = 0; // 5-8 letters
+            int longWordCount = 0;   // 9+ letters
+
+            for (String word : words) {
+                // Strip non-alphabet characters if necessary to count pure letter length
+                int length = word.replaceAll("[^a-zA-Z]", "").length();
+
+                if (length >= 1 && length <= 4) {
+                    shortWordCount++;
+                } else if (length >= 5 && length <= 8) {
+                    mediumWordCount++;
+                } else if (length >= 9) {
+                    longWordCount++;
+                }
+            }
+
+            System.out.printf("Short: %d | Medium: %d | Long: %d%n", 
+                    shortWordCount, mediumWordCount, longWordCount);
+
+        } catch (IllegalArgumentException ex) {
+            System.err.println("Input Error: " + ex.getMessage());
+        } catch (Exception ex) {
+            System.err.println("An error occurred while parsing review: " + ex.getMessage());
+        }
+    }
+
+    public static void main(String[] args) {
+        String sampleReview = "This movie was absolutely fantastic and thrilling";
+        classifyWordLengths(sampleReview);
+    }
+}

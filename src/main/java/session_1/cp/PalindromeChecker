@@ -1,0 +1,87 @@
+import java.util.Scanner;
+
+public class PalindromeChecker {
+
+    // Approach 1: Iterative Comparison
+    public static boolean isPalindromeIterative(String text) {
+        if (text == null) return false;
+        String cleanText = text.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
+        int left = 0;
+        int right = cleanText.length() - 1;
+
+        while (left < right) {
+            if (cleanText.charAt(left) != cleanText.charAt(right)) {
+                return false;
+            }
+            left++;
+            right--;
+        }
+        return true;
+    }
+
+    // Approach 2: Recursion
+    public static boolean isPalindromeRecursive(String text) {
+        if (text == null) return false;
+        String cleanText = text.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
+        return checkRecursiveHelper(cleanText, 0, cleanText.length() - 1);
+    }
+
+    private static boolean checkRecursiveHelper(String text, int left, int right) {
+        if (left >= right) return true;
+        if (text.charAt(left) != text.charAt(right)) return false;
+        return checkRecursiveHelper(text, left + 1, right - 1);
+    }
+
+    // Approach 3: Array Reversal
+    public static boolean isPalindromeArrayReversal(String text) {
+        if (text == null) return false;
+        String cleanText = text.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
+        char[] originalArray = cleanText.toCharArray();
+        char[] reversedArray = new char[originalArray.length];
+
+        for (int i = 0; i < originalArray.length; i++) {
+            reversedArray[i] = originalArray[originalArray.length - 1 - i];
+        }
+
+        return new String(originalArray).equals(new String(reversedArray));
+    }
+
+    public static void verifyPalindrome(String input) {
+        try {
+            if (input == null || input.trim().isEmpty()) {
+                throw new IllegalArgumentException("Input string cannot be empty.");
+            }
+
+            boolean iterative = isPalindromeIterative(input);
+            boolean recursive = isPalindromeRecursive(input);
+            boolean arrayRev = isPalindromeArrayReversal(input);
+
+            String iterResult = iterative ? "Palindrome" : "Not Palindrome";
+            String recResult = recursive ? "Palindrome" : "Not Palindrome";
+            String arrResult = arrayRev ? "Palindrome" : "Not Palindrome";
+
+            System.out.println("Input: \"" + input + "\"");
+            System.out.println("Iterative: " + iterResult + " | Recursive: " + recResult + " | Array Reversal: " + arrResult);
+            System.out.println("All approaches agree: " + (iterative == recursive && recursive == arrayRev) + "\n");
+
+        } catch (IllegalArgumentException e) {
+            System.err.println("Error: " + e.getMessage());
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        
+        System.out.print("Enter text to check palindrome: ");
+        String userInput = scanner.nextLine();
+
+        verifyPalindrome(userInput);
+
+        // Additional Test Cases
+        System.out.println("--- Demo Test Cases ---");
+        verifyPalindrome("madam");
+        verifyPalindrome("hello");
+
+        scanner.close();
+    }
+}

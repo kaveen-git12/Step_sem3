@@ -1,0 +1,53 @@
+import java.util.Scanner;
+
+public class ReverseCustomerName {
+
+    /**
+     * Reverses the provided customer name character by character.
+     *
+     * @param customerName The original customer name
+     * @return The reversed customer name
+     * @throws IllegalArgumentException if customerName is null or empty
+     */
+    public static String reverseCustomerName(String customerName) {
+        if (customerName == null || customerName.trim().isEmpty()) {
+            throw new IllegalArgumentException("Customer name cannot be null or empty.");
+        }
+
+        char[] originalChars = customerName.toCharArray();
+        char[] reversedChars = new char[originalChars.length];
+
+        for (int i = 0; i < originalChars.length; i++) {
+            reversedChars[i] = originalChars[originalChars.length - 1 - i];
+        }
+
+        return new String(reversedChars);
+    }
+
+    public static void verifyCustomerIdentity(String name) {
+        try {
+            String reversed = reverseCustomerName(name);
+            System.out.println("Original Name: " + name);
+            System.out.println("Reversed Name: " + reversed + "\n");
+        } catch (IllegalArgumentException e) {
+            System.err.println("Error processing name: " + e.getMessage() + "\n");
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("=== Customer Identity Verification System ===");
+        System.out.print("Enter Customer Name: ");
+        String inputName = scanner.nextLine();
+        System.out.println();
+
+        verifyCustomerIdentity(inputName);
+
+        // Additional Sample Test Case
+        System.out.println("--- Sample Verification ---");
+        verifyCustomerIdentity("Sunil");
+
+        scanner.close();
+    }
+}

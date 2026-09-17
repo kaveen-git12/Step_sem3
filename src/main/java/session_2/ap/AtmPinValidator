@@ -1,0 +1,32 @@
+import java.util.Scanner;
+
+public class AtmPinValidator {
+
+    public static void checkPinLength(String pin) {
+        if (pin == null) {
+            throw new IllegalArgumentException("PIN cannot be null.");
+        }
+
+        int pinLength = pin.length();
+
+        if (pinLength != 4) {
+            throw new IllegalArgumentException("Invalid PIN — must be exactly 4 digits.");
+        } else {
+            System.out.println("PIN length OK.");
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        try {
+            System.out.print("Enter PIN: ");
+            String inputPin = scanner.nextLine();
+            checkPinLength(inputPin);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Error: " + e.getMessage());
+        } finally {
+            scanner.close();
+        }
+    }
+}

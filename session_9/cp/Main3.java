@@ -1,10 +1,18 @@
 import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.List;
 
 abstract class ElectricityConnection {
     protected double units;
+    protected String type;
 
-    public ElectricityConnection(double units) {
+    public ElectricityConnection(String type, double units) {
+        this.type = type;
         this.units = units;
+    }
+
+    public String getType() {
+        return type;
     }
 
     public abstract double calculateBill();
@@ -12,7 +20,7 @@ abstract class ElectricityConnection {
 
 class HomeConnection extends ElectricityConnection {
     public HomeConnection(double units) {
-        super(units);
+        super("HOME", units);
     }
 
     @Override
@@ -27,7 +35,7 @@ class HomeConnection extends ElectricityConnection {
 
 class ShopConnection extends ElectricityConnection {
     public ShopConnection(double units) {
-        super(units);
+        super("SHOP", units);
     }
 
     @Override
@@ -38,44 +46,54 @@ class ShopConnection extends ElectricityConnection {
 
 class FactoryConnection extends ElectricityConnection {
     public FactoryConnection(double units) {
-        super(units);
+        super("FACTORY", units);
     }
 
     @Override
     public double calculateBill() {
-        return Math.max(units * 6.0, 1000.0);
+        double bill = units * 6.0;
+        return Math.max(bill, 1000.0);
     }
 }
 
-public class ElectricityBilling {
+public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         if (!scanner.hasNextInt()) return;
-        int n = scanner.nextInt();
 
-        double totalBilled = 0;
+        int n = scanner.nextInt();
+        List<ElectricityConnection> connections = new ArrayList<>();
+        double totalBilled = 0.0;
 
         for (int i = 0; i < n; i++) {
             String type = scanner.next();
             double units = scanner.nextDouble();
-
             ElectricityConnection conn = null;
-            if (type.equals("HOME")) {
-                conn = new HomeConnection(units);
-            } else if (type.equals("SHOP")) {
-                conn = new ShopConnection(units);
-            } else if (type.equals("FACTORY")) {
-                conn = new FactoryConnection(units);
+
+            switch (type.toUpperCase()) {
+                case "HOME":
+                    conn = new HomeConnection(units);
+                    break;
+                case "SHOP":
+                    conn = new ShopConnection(units);
+                    break;
+                case "FACTORY":
+                    conn = new FactoryConnection(units);
+                    break;
             }
 
             if (conn != null) {
-                double bill = conn.calculateBill();
-                totalBilled += bill;
-                System.out.printf("%s: %.2f%n", type, bill);
+                connections.add(conn);
             }
         }
 
-        System.out.printf("Total: %.2f%n", totalBilled);
+        for (ElectricityConnection conn : connections) {
+            double bill = conn.calculateBill();
+            totalBilled += bill;
+            System.out.printf("%s: %.2f\n", conn.getType(), bill);
+        }
+
+        System.out.printf("Total: %.2f\n", totalBilled);
         scanner.close();
     }
 }

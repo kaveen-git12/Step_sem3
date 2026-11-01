@@ -1,17 +1,17 @@
 import java.util.Scanner;
 
 abstract class Ticket {
-    protected static final double CONVENIENCE_FEE = 20.0;
     protected int count;
+    private static final double CONVENIENCE_FEE = 20.0;
 
     public Ticket(int count) {
         this.count = count;
     }
 
-    public abstract double getBasePricePerTicket();
+    public abstract double getBasePrice();
 
-    public double calculateTotalAmount() {
-        return count * (getBasePricePerTicket() + CONVENIENCE_FEE);
+    public double calculateTotal() {
+        return (getBasePrice() + CONVENIENCE_FEE) * count;
     }
 }
 
@@ -21,7 +21,7 @@ class RegularTicket extends Ticket {
     }
 
     @Override
-    public double getBasePricePerTicket() {
+    public double getBasePrice() {
         return 150.0;
     }
 }
@@ -32,7 +32,7 @@ class PremiumTicket extends Ticket {
     }
 
     @Override
-    public double getBasePricePerTicket() {
+    public double getBasePrice() {
         return 250.0;
     }
 }
@@ -43,7 +43,7 @@ class ReclinerTicket extends Ticket {
     }
 
     @Override
-    public double getBasePricePerTicket() {
+    public double getBasePrice() {
         return 400.0;
     }
 }
@@ -52,16 +52,16 @@ public class MovieTicketCounter {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         if (!scanner.hasNextInt()) return;
-        int n = scanner.nextInt();
 
-        double grandTotal = 0;
+        int n = scanner.nextInt();
+        double grandTotal = 0.0;
 
         for (int i = 0; i < n; i++) {
             String seatType = scanner.next();
             int count = scanner.nextInt();
-
             Ticket ticket = null;
-            switch (seatType) {
+
+            switch (seatType.toUpperCase()) {
                 case "REGULAR":
                     ticket = new RegularTicket(count);
                     break;
@@ -74,13 +74,13 @@ public class MovieTicketCounter {
             }
 
             if (ticket != null) {
-                double amount = ticket.calculateTotalAmount();
+                double amount = ticket.calculateTotal();
                 grandTotal += amount;
-                System.out.printf("%s: %.2f%n", seatType, amount);
+                System.out.printf("%s: %.2f\n", seatType.toUpperCase(), amount);
             }
         }
 
-        System.out.printf("Total: %.2f%n", grandTotal);
+        System.out.printf("Total: %.2f\n", grandTotal);
         scanner.close();
     }
 }

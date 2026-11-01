@@ -1,11 +1,19 @@
 import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.List;
 
 abstract class TravelBooking {
-    protected static final double BOOKING_FEE = 50.0;
     protected double distanceKm;
+    protected String mode;
+    private static final double BOOKING_FEE = 50.0; // Centralized single line of code
 
-    public TravelBooking(double distanceKm) {
+    public TravelBooking(String mode, double distanceKm) {
+        this.mode = mode;
         this.distanceKm = distanceKm;
+    }
+
+    public String getMode() {
+        return mode;
     }
 
     public abstract double calculateBaseFare();
@@ -17,7 +25,7 @@ abstract class TravelBooking {
 
 class BusBooking extends TravelBooking {
     public BusBooking(double distanceKm) {
-        super(distanceKm);
+        super("BUS", distanceKm);
     }
 
     @Override
@@ -28,7 +36,7 @@ class BusBooking extends TravelBooking {
 
 class TrainBooking extends TravelBooking {
     public TrainBooking(double distanceKm) {
-        super(distanceKm);
+        super("TRAIN", distanceKm);
     }
 
     @Override
@@ -39,7 +47,7 @@ class TrainBooking extends TravelBooking {
 
 class FlightBooking extends TravelBooking {
     public FlightBooking(double distanceKm) {
-        super(distanceKm);
+        super("FLIGHT", distanceKm);
     }
 
     @Override
@@ -48,28 +56,38 @@ class FlightBooking extends TravelBooking {
     }
 }
 
-public class TravelBookingDesk {
+public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         if (!scanner.hasNextInt()) return;
+
         int n = scanner.nextInt();
+        List<TravelBooking> bookings = new ArrayList<>();
 
         for (int i = 0; i < n; i++) {
             String mode = scanner.next();
             double distance = scanner.nextDouble();
-
             TravelBooking booking = null;
-            if (mode.equals("BUS")) {
-                booking = new BusBooking(distance);
-            } else if (mode.equals("TRAIN")) {
-                booking = new TrainBooking(distance);
-            } else if (mode.equals("FLIGHT")) {
-                booking = new FlightBooking(distance);
+
+            switch (mode.toUpperCase()) {
+                case "BUS":
+                    booking = new BusBooking(distance);
+                    break;
+                case "TRAIN":
+                    booking = new TrainBooking(distance);
+                    break;
+                case "FLIGHT":
+                    booking = new FlightBooking(distance);
+                    break;
             }
 
             if (booking != null) {
-                System.out.printf("%s: %.2f%n", mode, booking.calculateTotalFare());
+                bookings.add(booking);
             }
+        }
+
+        for (TravelBooking booking : bookings) {
+            System.out.printf("%s: %.2f\n", booking.getMode(), booking.calculateTotalFare());
         }
 
         scanner.close();

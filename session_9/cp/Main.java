@@ -1,4 +1,6 @@
 import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.List;
 
 abstract class Staff {
     protected String name;
@@ -7,11 +9,11 @@ abstract class Staff {
         this.name = name;
     }
 
-    public abstract double calculatePay();
-
     public String getName() {
         return name;
     }
+
+    public abstract double calculatePay();
 }
 
 class FullTimeStaff extends Staff {
@@ -43,15 +45,15 @@ class HourlyStaff extends Staff {
         if (hours <= 40) {
             return hours * rate;
         } else {
-            return (40 * rate) + ((hours - 40) * rate * 1.5);
+            return (40 * rate) + ((hours - 40) * 1.5 * rate);
         }
     }
 }
 
-class InternStaff extends Staff {
+class Intern extends Staff {
     private double stipend;
 
-    public InternStaff(String name, double stipend) {
+    public Intern(String name, double stipend) {
         super(name);
         this.stipend = stipend;
     }
@@ -62,39 +64,48 @@ class InternStaff extends Staff {
     }
 }
 
-public class WeeklyStaffPay {
+public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         if (!scanner.hasNextInt()) return;
-        int n = scanner.nextInt();
 
-        double totalPayroll = 0;
+        int n = scanner.nextInt();
+        List<Staff> staffList = new ArrayList<>();
+        double totalPayroll = 0.0;
 
         for (int i = 0; i < n; i++) {
             String type = scanner.next();
             String name = scanner.next();
-
             Staff staff = null;
-            if (type.equals("FULLTIME")) {
-                double salary = scanner.nextDouble();
-                staff = new FullTimeStaff(name, salary);
-            } else if (type.equals("HOURLY")) {
-                double hours = scanner.nextDouble();
-                double rate = scanner.nextDouble();
-                staff = new HourlyStaff(name, hours, rate);
-            } else if (type.equals("INTERN")) {
-                double stipend = scanner.nextDouble();
-                staff = new InternStaff(name, stipend);
+
+            switch (type.toUpperCase()) {
+                case "FULLTIME":
+                    double salary = scanner.nextDouble();
+                    staff = new FullTimeStaff(name, salary);
+                    break;
+                case "HOURLY":
+                    double hours = scanner.nextDouble();
+                    double rate = scanner.nextDouble();
+                    staff = new HourlyStaff(name, hours, rate);
+                    break;
+                case "INTERN":
+                    double stipend = scanner.nextDouble();
+                    staff = new Intern(name, stipend);
+                    break;
             }
 
             if (staff != null) {
-                double pay = staff.calculatePay();
-                totalPayroll += pay;
-                System.out.printf("%s: %.2f%n", staff.getName(), pay);
+                staffList.add(staff);
             }
         }
 
-        System.out.printf("Total Payroll: %.2f%n", totalPayroll);
+        for (Staff staff : staffList) {
+            double pay = staff.calculatePay();
+            totalPayroll += pay;
+            System.out.printf("%s: %.2f\n", staff.getName(), pay);
+        }
+
+        System.out.printf("Total Payroll: %.2f\n", totalPayroll);
         scanner.close();
     }
 }

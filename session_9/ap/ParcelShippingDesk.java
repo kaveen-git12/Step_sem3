@@ -13,7 +13,7 @@ abstract class Parcel {
         this.declaredValue = declaredValue;
     }
 
-    public abstract double calculateShippingCharge();
+    public abstract double calculateCharge();
 }
 
 class StandardParcel extends Parcel {
@@ -22,7 +22,7 @@ class StandardParcel extends Parcel {
     }
 
     @Override
-    public double calculateShippingCharge() {
+    public double calculateCharge() {
         return 40.0 + (10.0 * weightKg);
     }
 }
@@ -33,7 +33,7 @@ class ExpressParcel extends Parcel implements Insurable {
     }
 
     @Override
-    public double calculateShippingCharge() {
+    public double calculateCharge() {
         return 80.0 + (15.0 * weightKg);
     }
 
@@ -43,14 +43,15 @@ class ExpressParcel extends Parcel implements Insurable {
     }
 }
 
-class FragileParcel extends StandardParcel implements Insurable {
+class FragileParcel extends Parcel implements Insurable {
     public FragileParcel(double weightKg, double declaredValue) {
         super(weightKg, declaredValue);
     }
 
     @Override
-    public double calculateShippingCharge() {
-        return super.calculateShippingCharge() + 50.0;
+    public double calculateCharge() {
+        // Standard charge + 50 handling fee
+        return (40.0 + 10.0 * weightKg) + 50.0;
     }
 
     @Override
@@ -63,9 +64,9 @@ public class ParcelShippingDesk {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         if (!scanner.hasNextInt()) return;
-        int n = scanner.nextInt();
 
-        double grandTotal = 0;
+        int n = scanner.nextInt();
+        double grandTotal = 0.0;
 
         for (int i = 0; i < n; i++) {
             String type = scanner.next();
@@ -73,29 +74,26 @@ public class ParcelShippingDesk {
             double value = scanner.nextDouble();
 
             Parcel parcel = null;
-            switch (type) {
-                case "STANDARD":
-                    parcel = new StandardParcel(weight, value);
-                    break;
-                case "EXPRESS":
-                    parcel = new ExpressParcel(weight, value);
-                    break;
-                case "FRAGILE":
-                    parcel = new FragileParcel(weight, value);
-                    break;
+            if (type.equalsIgnoreCase("STANDARD")) {
+                parcel = new StandardParcel(weight, value);
+            } else if (type.equalsIgnoreCase("EXPRESS")) {
+                parcel = new ExpressParcel(weight, value);
+            } else if (type.equalsIgnoreCase("FRAGILE")) {
+                parcel = new FragileParcel(weight, value);
             }
 
             if (parcel != null) {
-                double charge = parcel.calculateShippingCharge();
+                double charge = parcel.calculateCharge();
                 double insurance = (parcel instanceof Insurable) ? ((Insurable) parcel).calculateInsurance() : 0.0;
                 double total = charge + insurance;
                 grandTotal += total;
 
-                System.out.printf("%s: Charge=%.2f Insurance=%.2f Total=%.2f%n", type, charge, insurance, total);
+                System.out.printf("%s: Charge=%.2f Insurance=%.2f Total=%.2f\n", 
+                                  type.toUpperCase(), charge, insurance, total);
             }
         }
 
-        System.out.printf("Grand Total: %.2f%n", grandTotal);
+        System.out.printf("Grand Total: %.2f\n", grandTotal);
         scanner.close();
     }
 }
